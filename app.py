@@ -396,4 +396,4 @@ async def instagram(username: str):
 
 @app.get("/")
 def root():
-    return {"app": "NEVDEV-MyFreela", "status": "ok"}
+    return {index.html}
