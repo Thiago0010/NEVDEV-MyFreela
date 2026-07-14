@@ -1,1047 +1,755 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyFreela | [NEV]²</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        /* --- SEU CSS ORIGINAL (MANTIDO) --- */
-        :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-sidebar: #0f172a;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent: #10b981;
-            --danger: #ef4444;
-            --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius: 12px;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NEVDEV — MyFreela</title>
+<meta name="description" content="Painel premium para freelancers gerenciarem projetos, finanças e crescimento." />
 
-        [data-theme="dark"] {
-            --bg-body: #020617;
-            --bg-card: #1e293b;
-            --bg-sidebar: #020617;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
-        }
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; transition: background 0.3s; }
-
-        .login-container { 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
-            z-index: 9999; position: absolute; width: 100%; top: 0;
-        }
-        .login-box { 
-            background: var(--bg-card); padding: 2.5rem; border-radius: var(--radius); 
-            width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border);
-        }
-        .login-box h2 { font-weight: 700; margin-bottom: 1.5rem; color: var(--text-main); } 
-        .login-box input { 
-            width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid var(--border); 
-            border-radius: 8px; background: transparent; color: var(--text-main);
-        }
-        .toggle-auth { color: var(--primary); cursor: pointer; font-size: 0.85rem; margin-top: 15px; display: block; text-align: center;}
-        .toggle-auth:hover { text-decoration: underline; }
-
-        .app-layout { display: flex; height: 100%; }
-        .sidebar { 
-            width: 260px; background: var(--bg-sidebar); color: white; 
-            display: flex; flex-direction: column; padding: 1.5rem; 
-            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
-        }
-        .logo { 
-            font-size: 1.4rem; font-weight: 800; margin-bottom: 2.5rem; 
-            color: #fff; display: flex; align-items: center; gap: 10px;
-        }
-        .logo i { color: var(--primary); }
-
-        .sidebar nav button { 
-            background: none; border: none; color: #94a3b8; width: 100%; 
-            padding: 14px 16px; text-align: left; cursor: pointer; 
-            border-radius: 10px; margin-bottom: 8px; transition: all 0.2s ease;
-            display: flex; align-items: center; gap: 12px; font-weight: 500;
-        }
-        .sidebar nav button:hover { background: rgba(255,255,255,0.05); color: white; }
-        .sidebar nav button.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
-
-        .content { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
-        header h2 { font-size: 1.75rem; font-weight: 700; }
-
-        .card { 
-            background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); 
-            border: 1px solid var(--border); box-shadow: var(--shadow); 
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-2px); }
-        
-        .btn-primary { 
-            background: var(--primary); color: white; border: none; 
-            padding: 12px 24px; border-radius: 8px; cursor: pointer; 
-            font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
-        }
-        .btn-primary:hover { background: var(--primary-hover); transform: scale(1.02); }
-
-        .finance-header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
-        .bg-green { border-top: 4px solid var(--accent); }
-        .bg-red { border-top: 4px solid var(--danger); }
-        .bg-blue { border-top: 4px solid var(--primary); }
-
-        .simple-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1rem; }
-        .simple-table th { background: rgba(0,0,0,0.02); padding: 15px; text-align: left; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
-        .simple-table td { padding: 15px; border-bottom: 1px solid var(--border); }
-
-        .note-card { 
-            background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); 
-            border: 1px solid var(--border); margin-bottom: 1.5rem; 
-            break-inside: avoid; box-shadow: var(--shadow);
-        }
-        .tag { font-size: 0.75rem; font-weight: 600; background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; }
-
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .status-ideia { background: #fef3c7; color: #92400e; }
-        .status-andamento { background: #dbeafe; color: #1e40af; }
-        .status-concluido { background: #d1fae5; color: #065f46; }
-
-        .hidden { display: none !important; }
-        input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
-
-        @media (max-width: 768px) {
-            .app-layout { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px; }
-            .logo, .sidebar-footer { display: none; }
-            .sidebar nav { display: flex; overflow-x: auto; width: 100%; }
-            .content { padding: 1.5rem; }
-            .finance-header { grid-template-columns: 1fr; }
-        }
-        
-        .view { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; 
-            z-index: 1000; backdrop-filter: blur(4px);
-        }
-        .modal-content { 
-            background: var(--bg-card); padding: 2rem; border-radius: 16px; 
-            width: 400px; box-shadow: var(--shadow); border: 1px solid var(--border);
-        }
-        .modal-content input, .modal-content select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-body); color: var(--text-main); }
-        
-        /* Estilo para Redes Sociais */
-        .social-card {
-            display: flex; align-items: center; gap: 15px; padding: 1rem;
-        }
-        .social-icon {
-            width: 45px; height: 45px; border-radius: 10px; background: var(--primary);
-            color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-        }
-        .instagram input {
-            width: calc(100% - 100px); padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-body); color: var(--text-main);
-        }
-        button {
-            padding: 10px 15px; border: none; border-radius: 8px; background: var(--primary); color: white; cursor: pointer; font-weight: 600;
-        }
-
-.instagram-container {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        max-width: 400px;
-        margin: 20px auto;
-        text-align: center;
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+        colors: {
+          ink:   { 950:'#0a0a12', 900:'#0f0f1a', 850:'#141422', 800:'#1a1a2b', 700:'#232336', 600:'#2e2e46' },
+          brand: { 400:'#a78bfa', 500:'#8b5cf6', 600:'#7c3aed', 700:'#6d28d9' },
+        },
+        boxShadow: {
+          glow: '0 10px 40px -10px rgba(139,92,246,.45)',
+          card: '0 1px 0 rgba(255,255,255,.04) inset, 0 10px 30px -12px rgba(0,0,0,.6)',
+        },
+      }
     }
-
-    .search-box { margin-bottom: 20px; }
-
-.card {
-        background: white;
-        border: 1px solid #dbdbdb;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .stats-container {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 20px;
-        border-top: 1px solid #efefef;
-        padding-top: 20px;
-    }
-
-    .stat-item { display: flex; flex-direction: column; }
-
-    .stat-value {
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #262626;
-    }
-
-    .stat-label {
-        color: #8e8e8e;
-        font-size: 0.9rem;
-    }
-
-input {
-        padding: 10px;
-        border: 1px solid #dbdbdb;
-        border-radius: 5px;
-        outline: none;
-    }
-
-span {
-        font-weight: bold;
-        color: #d1dd60;
-    }
-    
-/* Substitua as regras de cores fixas por estas dinâmicas */
-h1, h2, h3, h4, h5, h6, p, span, td, th {
-    color: var(--text-main); /* Agora ele respeita o tema */
-}
-
-.black {
-    color: var(--text-main) !important;
-}
-
-.card h2, .card h3 {
-    color: var(--text-main);
-}
-
-.score-container {
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 8px;
-    font-weight: bold;
-    display: inline-block;
-}
-
-.score-saudavel { background-color: #e6fffa; color: #2d6a4f; border: 1px solid #b7e4c7; }
-.score-medio { background-color: #fff9db; color: #927600; border: 1px solid #ffe066; }
-.score-baixo { background-color: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
-
-
-.tip-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-left: 4px solid #0095f6; /* Azul do Instagram */
-    border-radius: 6px;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    text-align: left;
-    color: #333;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-}
-
-.tip-container strong {
-    display: block;
-    color: #0095f6;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-}
-
-
-/* --- CSS DO PDF: AZUL SÓLIDO E SEM OPACIDADE --- */
-.pdf-export-active {
-    background: #1e3a8a !important; /* Azul Royal Sólido */
-    color: #ffffff !important;
-    padding: 30px !important;
-    width: 794px !important;
-    min-height: 1123px !important;
-    opacity: 1 !important; /* Garante 100% de opacidade */
-    display: block !important;
-}
-
-/* Força todo o conteúdo interno a ser branco e sem brilho reduzido */
-.pdf-export-active * {
-    color: #ffffff !important;
-    opacity: 1 !important;
-    background-color: transparent !important;
-}
-
-/* Cards com tom de azul ligeiramente diferente para contraste */
-.pdf-export-active .card {
-    background-color: #2563eb !important; 
-    border: 1px solid #3b82f6 !important;
-    opacity: 1 !important;
-}
-
-
-    </style>
-</head>
-<body>
-
-    <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="modal-title" style="color: var(--text-main)">Título</h3>
-            <i class="fas fa-times" style="cursor:pointer; color: var(--text-muted)" onclick="Modal.close()"></i>
-        </div>
-        <div id="modal-body">
-            </div>
-    </div>
-</div>
-
-    <div id="login-screen" class="login-container">
-        <div class="login-box">
-            <div style="font-size: 2rem; margin-bottom: 10px; text-align: center;">🚀</div>
-            <h2 id="auth-title" style="text-align: center;">Fazer Login</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; text-align: center;">Gerencie suas finanças de forma segura.</p>
-            
-            <input type="text" id="auth-name" placeholder="Seu Nome Completo" class="hidden">
-            <input type="email" id="auth-user" placeholder="email">
-            <input type="password" id="auth-pass" placeholder="Senha">
-            
-            <button class="btn-primary" style="width:100%; justify-content: center; margin-top: 15px;" onclick="Auth.submit()">Acessar Painel</button>
-            <p id="auth-error" class="hidden" style="color:var(--danger); margin-top:15px; font-size: 0.85rem; font-weight: 600; text-align: center;">⚠️ Credenciais inválidas</p>
-            
-            <span class="toggle-auth" onclick="Auth.toggleMode()">Não tem conta? Criar agora</span>
-        </div>
-    </div>
-
-    <div id="app-container" class="app-layout hidden">
-        <aside class="sidebar">
-            <div class="logo"><i class="fas fa-rocket"></i> [NEV]² MyFreela</div>
-            <nav>
-                <button onclick="Nav.go('dashboard', event)" class="active"><i class="fas fa-chart-pie"></i> Dashboard</button>
-                <button onclick="Nav.go('projects', event)"><i class="fas fa-layer-group"></i> Projetos</button>
-                <button onclick="Nav.go('notes', event)"><i class="fas fa-pen-fancy"></i> Anotações</button>
-                <button onclick="Nav.go('finance', event)"><i class="fas fa-credit-card"></i> Financeiro</button>
-                <button onclick="Nav.go('social', event)"><i class="fas fa-share-nodes"></i> Redes Sociais</button>
-                <div class="actions">
-    <button class="btn-primary" style="background: #e11d48;" onclick="Export.generatePDF()">
-        <i class="fas fa-file-pdf"></i> Exportar PDF
-    </button>
-    
-
-</div>
-            </nav>
-            <div class="sidebar-footer" style="margin-top: auto;">
-                <button onclick="Theme.toggle()"><i class="fas fa-moon"></i> Alternar Tema</button>
-                <button onclick="Auth.logout()"><i class="fas fa-arrow-right-from-bracket"></i> Sair</button>
-            </div>
-        </aside>
-
-        <main class="content">
-            <header>
-                <div>
-                    <h2 id="page-title">Dashboard</h2>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Bem-vindo, <span id="user-name" style="font-weight: 700; color: var(--primary);">Usuário</span></p>
-                </div>
-                <div class="actions">
-                     <button class="btn-primary" id="btn-header-action" onclick="Modal.open('project')"><i class="fas fa-plus"></i> Novo Item</button>
-                </div>
-            </header>
-
-            <section id="view-dashboard" class="view active">
-                <div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-                    <div class="card">
-                        <h3 style="font-size: 0.9rem; color: var(--text-muted);">Projetos Ativos</h3>
-                        <p id="dash-active-projects" style="font-size: 2rem; font-weight: 800; color: #020617;">0</p>
-                    </div>
-                    <div class="card">
-                        <h3 style="font-size: 0.9rem; color: var(--text-muted);">Faturamento Mensal</h3>
-                        <p id="dash-income" style="font-size: 2rem; font-weight: 800; color: var(--accent);">R$ 0,00</p>
-                    </div>
-                    <div class="card">
-                        <h3 style="font-size: 0.9rem; color: var(--text-muted);">Anotações Salvas</h3>
-                        <p id="dash-notes-count" style="font-size: 2rem; font-weight: 800; color: #020617;">0</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3 style="margin-bottom: 20px; color: #020617;">Visão Geral de Status</h3>
-                    <canvas id="projectsChart" width="400" height="150"></canvas>
-                </div>
-            </section>
-
-            <section id="view-projects" class="view">
-                <div id="projects-list" class="grid-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-                </div>
-            </section>
-
-            <section id="view-notes" class="view">
-                <div class="actions" style="margin-bottom: 2rem; display: flex; gap: 10px;">
-                    <input type="text" id="note-search" placeholder="Filtrar notas..." onkeyup="Notes.render()" style="max-width: 400px; padding: 12px;">
-                    <button class="btn-primary" onclick="Modal.open('note')">Nova Nota</button>
-                </div>
-                <div id="notes-list" class="notes-grid" style="column-count: 3; column-gap: 1.5rem;">
-                </div>
-            </section>
-
-            <section id="view-finance" class="view">
-                <div class="finance-header">
-                    <div class="card bg-green"><small style="color:#020617;">Entradas</small><h2 style="color: #020617 !important;" id="fin-in" class="black" >R$ 0,00</h2></div>
-                    <div class="card bg-red"><small>Saídas</small><h2 id="fin-out" class="black" style="color: #020617 !important;"> R$ 0,00</h2></div>
-                    <div class="card bg-blue"><small>Balanço</small><h2 id="fin-bal" class="black" style="color: #020617 !important;">R$ 0,00</h2></div>
-                    <style>
-                        #view-finance .finance-header small{
-                            color: #0f172a !important;
-                        }
-                    </style>
-                </div>
-                <div style="margin-bottom: 1rem; display: flex; justify-content: flex-end;">
-                     <button class="btn-primary" onclick="Modal.open('transaction')">Nova Transação</button>
-                </div>
-                <div class="card">
-                    <table class="simple-table">
-                        <thead><tr><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Ação</th></tr></thead>
-                        <tbody id="finance-list"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="view-social" class="view">
-                <div style="margin-bottom: 1rem; display: flex; justify-content: flex-end;">
-                    <button class="btn-primary" onclick="Modal.open('social')"><i class="fas fa-plus"></i> Adicionar Perfil</button>
-                </div>
-                <div id="social-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
-                </div>
-                <hr style="margin: 2rem 0;" />
- <div class="instagram-container">
-    <div class="search-box">
-        <h1>Veja suas estatísticas do 
-            <br>
-            <span>Instagram</span></h1>
-            <br><br><br>
-        <input id="user" placeholder="Digite o @usuario" />
-        <button onclick="buscar()">Buscar Perfil</button>
-    </div>
-
-    <div id="loading" style="display: none;">Carregando dados...</div>
-
-    <div id="profile-card" class="card" style="display: none;">
-        <h2 style="color: #020617 !important;" id="res-username">@usuario</h2>
-        <div id="res-score" class="score-container">
-            <div id="res-tip-box" class="tip-container" style="display: none;">
-    <strong>💡 Dica de Ouro:</strong> 
-    <span id="res-tip-text"></span>
-</div>
-    </div>
-        <div class="stats-container">
-            <div class="stat-item">
-                <span class="stat-value" id="res-posts">0</span>
-                <span class="stat-label">Posts</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="res-followers">0</span>
-                <span class="stat-label">Seguidores</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value" id="res-following">0</span>
-                <span class="stat-label">Seguindo</span>
-            </div>
-        </div>
-    </div>
-    <br><br><br>
-    <div class="[NEV]²Bot">
-        <h2>Acesse o nosso sistema de 
-            <br>
-            <span>Automação para whatsapp</span>
-        </h2>
-        <br><br>
-        <a href="https://nev-bot-automations.infinityfree.me/" target="_blank">
-            <button>Conheça o [NEV]²Bot</button>
-    </div>
-</div>
+  }
+</script>
 
 <style>
-    /* ... (Mantenha o CSS anterior e adicione este abaixo) ... */
-    #loading {
-        margin: 10px;
-        color: #0095f6;
-        font-weight: bold;
-        animation: pulse 1s infinite;
-    }
-    @keyframes pulse {
-        0% { opacity: 0.5; }
-        50% { opacity: 1; }
-        100% { opacity: 0.5; }
-    }
+  html,body{font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#2e2e46;border-radius:8px}
+  ::-webkit-scrollbar-thumb:hover{background:#3b3b58}
+  .glass{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));backdrop-filter:blur(10px)}
+  .grad-brand{background:linear-gradient(135deg,#8b5cf6 0%,#6366f1 50%,#22d3ee 100%)}
+  .grad-text{background:linear-gradient(135deg,#c4b5fd,#a5f3fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-item{transition:all .2s ease}
+  .nav-item.active{background:linear-gradient(90deg,rgba(139,92,246,.18),rgba(139,92,246,0));color:#fff}
+  .nav-item.active .dot{opacity:1}
+  .card{transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+  .card:hover{transform:translateY(-2px)}
+  .fade-in{animation:fade .35s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  input,select,textarea{color-scheme:dark}
 </style>
+</head>
+
+<body class="bg-ink-950 text-slate-100 antialiased selection:bg-brand-600/40">
+
+<!-- =================== LOGIN =================== -->
+<div id="login" class="min-h-screen grid place-items-center px-6">
+  <div class="w-full max-w-md glass border border-white/5 rounded-3xl p-8 shadow-card fade-in">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-11 h-11 rounded-2xl grad-brand grid place-items-center shadow-glow">
+        <span class="font-bold text-lg">N</span>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-widest text-slate-400">NEVDEV</div>
+        <div class="font-bold text-lg -mt-0.5">MyFreela</div>
+      </div>
+    </div>
+    <h1 class="text-2xl font-bold mb-1">Bem-vindo de volta 👋</h1>
+    <p class="text-slate-400 text-sm mb-6">Entre para acessar seu painel.</p>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="text-xs text-slate-400">E-mail</label>
+        <input required type="email" id="email" value="nev@freela.dev"
+          class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/50" />
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">Senha</label>
+        <input required type="password" id="password" value="demo"
+          class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/50" />
+      </div>
+      <button class="w-full grad-brand rounded-xl py-3 font-semibold shadow-glow hover:brightness-110 transition">
+        Entrar
+      </button>
+    </form>
+    <p class="text-[11px] text-slate-500 mt-6 text-center">Não tem conta? <a href="#" id="registerLink" class="text-brand-400 font-semibold">Criar conta</a></p>
+  </div>
+</div>
+
+<!-- =================== APP =================== -->
+<div id="app" class="hidden min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
+
+  <!-- Sidebar -->
+  <aside class="lg:sticky lg:top-0 lg:h-screen border-r border-white/5 bg-ink-900/60 backdrop-blur px-4 py-6 flex lg:flex-col gap-1 overflow-x-auto">
+    <div class="flex items-center gap-3 px-2 pb-6 shrink-0">
+      <div class="w-10 h-10 rounded-2xl grad-brand grid place-items-center shadow-glow"><span class="font-bold">N</span></div>
+      <div class="hidden lg:block">
+        <div class="text-[10px] uppercase tracking-widest text-slate-500">NEVDEV</div>
+        <div class="font-bold -mt-0.5">MyFreela</div>
+      </div>
+    </div>
+
+    <nav id="nav" class="flex lg:flex-col gap-1 flex-1"></nav>
+
+    <div class="hidden lg:flex items-center gap-3 mt-6 p-3 rounded-xl bg-ink-800/60 border border-white/5">
+      <div class="w-9 h-9 rounded-full grad-brand grid place-items-center text-sm font-bold">N</div>
+      <div class="min-w-0">
+        <div id="userName" class="text-sm font-semibold truncate">Nev</div>
+        <div id="userSubtitle" class="text-[11px] text-slate-400 truncate">Freelancer · Pro</div>
+      </div>
+      <button onclick="logout()" title="Sair" class="ml-auto text-slate-400 hover:text-white">⎋</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="min-w-0">
+    <!-- Topbar -->
+    <header class="sticky top-0 z-20 bg-ink-950/80 backdrop-blur border-b border-white/5">
+      <div class="px-6 lg:px-10 py-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+        <div class="min-w-0">
+          <h1 id="pageTitle" class="text-xl lg:text-2xl font-bold truncate">Dashboard</h1>
+          <p id="pageSubtitle" class="text-slate-400 text-sm truncate">Sua visão geral hoje.</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="hidden md:flex items-center gap-2 bg-ink-800 border border-white/5 rounded-xl px-3 py-2">
+            <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="globalSearch" placeholder="Buscar…" class="bg-transparent focus:outline-none text-sm w-48"/>
+          </div>
+          <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-ink-800 border border-white/5 hover:bg-ink-700 grid place-items-center" title="Tema">🌗</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="view" class="px-6 lg:px-10 py-8"></div>
+  </main>
+</div>
+
+<!-- =================== Modal =================== -->
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm grid place-items-center px-4">
+  <div class="w-full max-w-lg glass border border-white/10 rounded-2xl p-6 shadow-card fade-in">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="modalTitle" class="text-lg font-bold">Título</h3>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl">×</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 hidden px-4 py-3 rounded-xl border border-white/10 bg-ink-800 shadow-glow text-sm"></div>
+
 <script>
+/* ============================================================
+   CONFIG
+============================================================ */
+const API = (localStorage.getItem('api') || window.location.origin).replace(/\/$/,'');
+const $ = (s,r=document)=>r.querySelector(s);
+const $$= (s,r=document)=>[...r.querySelectorAll(s)];
+const fmtBRL = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtDate= v => v ? new Date(v).toLocaleDateString('pt-BR') : '—';
 
-// --- API & ESTADO ---
-const BASE_URL = 'https://personal-finance-api-2pke.onrender.com';
-const API = {
-    user: null,
-    data: { projects: [], notes: [], transactions: [], social: [] }, 
+const state = { route:'dashboard', projects:[], finance:[], notes:[], dash:{}, search:'' };
 
-        async request(endpoint, method = 'GET', body = null) {
-        const options = {
-            method,
-            headers: { 'Content-Type': 'application/json' }
-        };
-
-        if (body) options.body = JSON.stringify(body);
-
-        const url = BASE_URL + endpoint;
-
-        try {
-            const res = await fetch(url, options);
-
-            if (!res.ok) {
-                console.error('Erro HTTP:', res.status);
-                return null;
-            }
-
-            return await res.json();
-
-            
-        } catch (e) {
-            console.error("Erro API", e);
-            return null;
-        }
-    },
-
-        async sync() {
-        if (!this.user) return;
-
-        await this.request('/api/sync', 'POST', {
-            data: this.data
-        });
-
-        App.render();
-    },
-
-    async load() {
-    if (!API.user || !API.user.id) return;
-
-    const res = await API.request(
-        `/usuarios/${API.user.id}/resumo`,
-        'GET'
-    );
-
-    if (res) {
-        this.data.projects = res.projects || [];
-        this.data.notes = res.notes || [];
-        this.data.transactions = res.transactions || [];
-        this.data.social = res.social || [];
-    }
-
-    App.render();
+/* ============================================================
+   API helpers
+============================================================ */
+async function api(path, opts={}){
+  const r = await fetch(API+path, {
+    headers:{'Content-Type':'application/json'},
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.status===204 ? null : r.json();
 }
-};
-
-const Auth = {
-    isRegistering: false,
-
-    init() {
-        const stored = localStorage.getItem('user_session');
-        if (stored) {
-            API.user = JSON.parse(stored);
-            this.showApp();
-        } else {
-            document.getElementById('login-screen').classList.remove('hidden');
-        }
-    },
-
-    toggleMode() {
-        this.isRegistering = !this.isRegistering;
-
-        document.getElementById('auth-title').innerText =
-            this.isRegistering ? "Criar Conta" : "Fazer Login";
-
-        document.getElementById('auth-name').classList.toggle('hidden');
-
-        document.querySelector('.toggle-auth').innerText =
-            this.isRegistering ? "Já tenho conta" : "Criar conta nova";
-
-        document.querySelector('#login-screen button').innerText =
-            this.isRegistering ? "Cadastrar" : "Acessar Painel";
-    },
-
-    async submit() {
-        const email = document.getElementById('auth-user').value;
-        const senha = document.getElementById('auth-pass').value;
-        const nome  = document.getElementById('auth-name').value;
-
-        const endpoint = this.isRegistering
-            ? '/auth/register'
-            : '/auth/login';
-
-        const payload = this.isRegistering
-            ? { nome, email, senha }
-            : { email, senha };
-
-        const res = await API.request(endpoint, 'POST', payload);
-
-        console.log('AUTH RESPONSE RAW:', res);
-        console.log('ID:', res?.id);
-        console.log('CHAVES:', Object.keys(res || {}));
-
-        if (res) {
-            API.user = res;
-            localStorage.setItem('user_session', JSON.stringify(res));
-            this.showApp();
-        }
-
-        if (res) {
-            API.user = res;
-            localStorage.setItem('user_session', JSON.stringify(res));
-            this.showApp();
-        } else {
-            const errEl = document.getElementById('auth-error');
-            if (errEl) {
-                errEl.classList.remove('hidden');
-                errEl.innerText = "Erro ao autenticar";
-            } else {
-                alert("Erro ao autenticar");
-            }
-        }
-    },
-
-    logout() {
-        localStorage.removeItem('user_session');
-        location.reload();
-    },
-
-    showApp() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-container').classList.remove('hidden');
-
-        // backend retorna `nome`
-        document.getElementById('user-name').innerText = API.user.nome;
-
-        API.load();
-    }
-};
-
-const Nav = {
-    go(viewId, event) {
-        // Esconde todas as telas
-        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-        const target = document.getElementById(`view-${viewId}`);
-        if(target) target.classList.add('active');
-        
-        // Ativa o botão da sidebar
-        document.querySelectorAll('.sidebar nav button').forEach(el => el.classList.remove('active'));
-        if (event) event.currentTarget.classList.add('active');
-        
-        // Atualiza o título da página
-        document.getElementById('page-title').innerText = 
-            viewId === 'social' ? 'Redes Sociais' : viewId.charAt(0).toUpperCase() + viewId.slice(1);
-        
-        // LÓGICA DO BOTÃO DO HEADER
-        const btnHeader = document.getElementById('btn-header-action');
-        btnHeader.classList.remove('hidden'); // Mostra por padrão
-
-        if(viewId === 'projects') {
-            btnHeader.innerHTML = '<i class="fas fa-plus"></i> Novo Projeto';
-            btnHeader.onclick = () => Modal.open('project');
-        } else if(viewId === 'notes') {
-            btnHeader.innerHTML = '<i class="fas fa-pen"></i> Nova Nota';
-            btnHeader.onclick = () => Modal.open('note');
-        } else if(viewId === 'finance') {
-            btnHeader.innerHTML = '<i class="fas fa-dollar-sign"></i> Lançar Valor';
-            btnHeader.onclick = () => Modal.open('transaction');
-        } else if(viewId === 'social') {
-            btnHeader.innerHTML = '<i class="fas fa-share-nodes"></i> Adicionar Perfil';
-            btnHeader.onclick = () => Modal.open('social');
-        } else {
-            btnHeader.classList.add('hidden'); // Esconde na dashboard se quiser
-        }
-
-        App.render();
-    }
-};
-
-const App = {
-    render() {
-        if(!API.user) return;
-        Dashboard.render();
-        Projects.render();
-        Notes.render();
-        Finance.render();
-        Social.render();
-    }
-};
-
-const Social = {
-    render() {
-        const list = document.getElementById('social-list');
-        if(!list) return;
-        list.innerHTML = '';
-        (API.data.social || []).forEach((s, index) => {
-            const div = document.createElement('div');
-            div.className = 'card social-card';
-            let icon = 'fa-globe';
-            const p = s.platform.toLowerCase();
-            if(p.includes('instagram')) icon = 'fa-brands fa-instagram';
-            else if(p.includes('facebook')) icon = 'fa-brands fa-facebook';
-            else if(p.includes('linkedin')) icon = 'fa-brands fa-linkedin';
-            else if(p.includes('twitter') || p.includes(' x ')) icon = 'fa-brands fa-x-twitter';
-            else if(p.includes('youtube')) icon = 'fa-brands fa-youtube';
-
-            div.innerHTML = `
-                <div class="social-icon"><i class="${icon}"></i></div>
-                <div style="flex:1">
-                    <h4 style="font-size: 1rem;">${s.platform}</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted)">${s.handle}</p>
-                </div>
-                <div style="display:flex; gap:10px">
-                     <a href="${s.link.startsWith('http') ? s.link : 'https://'+s.link}" target="_blank" style="color: var(--primary)"><i class="fas fa-external-link-alt"></i></a>
-                     <i class="fas fa-trash" style="cursor:pointer; color:var(--danger)" onclick="Social.del(${index})"></i>
-                </div>
-            `;
-            list.appendChild(div);
-        });
-    },
-    del(index) {
-        if(confirm('Remover esta rede social?')) {
-            API.data.social.splice(index, 1);
-            API.sync();
-        }
-    }
-};
-
-const Dashboard = {
-    render() {
-        const projects = API.data.projects || [];
-        document.getElementById('dash-active-projects').innerText = projects.filter(p => p.status === 'andamento').length;
-        document.getElementById('dash-notes-count').innerText = API.data.notes.length;
-        this.drawChart(projects);
-    },
-    drawChart(projects) {
-        const canvas = document.getElementById('projectsChart');
-        if(!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, 400, 150);
-        const statuses = { 'ideia': 0, 'andamento': 0, 'concluido': 0 };
-        projects.forEach(p => statuses[p.status] = (statuses[p.status] || 0) + 1);
-        const total = projects.length || 1;
-        let x = 40;
-        const colors = { 'ideia': '#f59e0b', 'andamento': '#6366f1', 'concluido': '#10b981' };
-        for (let s in statuses) {
-            const h = (statuses[s] / total) * 100;
-            ctx.fillStyle = colors[s];
-            ctx.fillRect(x, 120 - h, 40, h);
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = 'bold 10px sans-serif';
-            ctx.fillText(s.toUpperCase(), x - 5, 140);
-            x += 100;
-        }
-    }
-};
-
-const Projects = {
-    render() {
-        const list = document.getElementById('projects-list');
-        if(!list) return;
-        list.innerHTML = '';
-        API.data.projects.forEach((p, index) => {
-            const div = document.createElement('div');
-            div.className = `card`;
-            div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:15px;">
-                    <span class="status-badge status-${p.status}">${p.status}</span>
-                    <div style="display:flex; gap:10px">
-                        <i class="fas fa-edit" style="cursor:pointer; color:var(--primary)" onclick="Modal.editProject(${index})"></i>
-                        <i class="fas fa-trash" style="cursor:pointer; color:var(--danger)" onclick="Projects.del(${index})"></i>
-                    </div>
-                </div>
-                <h4 style="margin-bottom:5px; font-size:1.1rem; color: var(--primary) !important;">${p.name}</h4>
-                <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px;"><i class="fas fa-user"></i> ${p.client || 'Particular'}</p>
-                <div style="border-top:1px solid var(--border); padding-top:15px; font-weight:700; color:var(--primary)">
-                    R$ ${parseFloat(p.value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                </div>
-            `;
-            list.appendChild(div);
-        });
-    },
-    del(index) {
-        if (confirm('Excluir projeto?')) {
-            API.data.projects.splice(index, 1);
-            API.sync();
-        }
-    }
-};
-
-const Notes = {
-    render() {
-        const searchInput = document.getElementById('note-search');
-        const filter = searchInput ? searchInput.value.toLowerCase() : '';
-        const list = document.getElementById('notes-list');
-        if(!list) return;
-        list.innerHTML = '';
-        API.data.notes.forEach((n, index) => {
-            if (n.text.toLowerCase().includes(filter)) {
-                const div = document.createElement('div');
-                div.className = 'note-card';
-                div.innerHTML = `
-                    <p style="line-height:1.6; margin-bottom:15px">${n.text}</p>
-                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px">
-                        ${(n.tags || '').split(',').map(t => t.trim() ? `<span class="tag">#${t.trim()}</span>` : '').join('')}
-                    </div>
-                    <button style="color:var(--danger); border:none; background:none; cursor:pointer; font-size:0.75rem; font-weight:700" onclick="Notes.del(${index})">EXCLUIR NOTA</button>
-                `;
-                list.appendChild(div);
-            }
-        });
-    },
-    del(index) {
-        API.data.notes.splice(index, 1);
-        API.sync();
-    }
-};
-
-const Finance = {
-    render() {
-        const txs = API.data.transactions;
-        let income = 0, expense = 0;
-        const tbody = document.getElementById('finance-list');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        txs.forEach((t, index) => {
-            const val = parseFloat(t.value) || 0;
-            if (t.type === 'in') income += val; else expense += val;
-            tbody.innerHTML += `
-                <tr>
-                    <td><strong style="color: #0f172a">${t.desc}</strong></td>
-                    <td><span style="color:${t.type==='in'?'var(--accent)':'var(--danger)'}; font-weight:700">${t.type==='in'?'▲ Entrada':'▼ Saída'}</span></td>
-                    <td style="color: #0f172a">R$ ${val.toFixed(2)}</td>
-                    <td><i class="fas fa-trash-alt" style="cursor:pointer; color:var(--text-muted)" onclick="Finance.del(${index})"></i></td>
-                </tr>
-            `;
-        });
-        document.getElementById('fin-in').innerText = `R$ ${income.toFixed(2)}`;
-        document.getElementById('fin-out').innerText = `R$ ${expense.toFixed(2)}`;
-        document.getElementById('fin-bal').innerText = `R$ ${(income - expense).toFixed(2)}`;
-        document.getElementById('dash-income').innerText = `R$ ${income.toFixed(2)}`;
-    },
-    del(index) {
-        API.data.transactions.splice(index, 1);
-        API.sync();
-    }
-};
-
-const Modal = {
-    currentType: null,
-    editingIndex: null,
-    open(type) {
-        this.currentType = type;
-        this.editingIndex = null;
-        const body = document.getElementById('modal-body');
-        const title = document.getElementById('modal-title');
-        const overlay = document.getElementById('modal-overlay');
-        if(!overlay) return;
-        overlay.classList.remove('hidden');
-
-        if (type === 'project') {
-            title.innerText = "Novo Projeto";
-            body.innerHTML = `
-                <input id="m-p-name" placeholder="Nome do Projeto">
-                <input id="m-p-client" placeholder="Cliente">
-                <select id="m-p-status">
-                    <option value="ideia">Ideia</option>
-                    <option value="andamento">Em Andamento</option>
-                    <option value="concluido">Concluído</option>
-                </select>
-                <input id="m-p-val" type="number" placeholder="Valor">
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="Modal.save()">Salvar Projeto</button>
-            `;
-        } else if (type === 'note') {
-            title.innerText = "Nova Nota";
-            body.innerHTML = `
-                <textarea id="m-n-text" rows="4" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; margin-bottom:10px; background:var(--bg-body); color:var(--text-main)" placeholder="Escreva sua nota..."></textarea>
-                <input id="m-n-tags" placeholder="Tags (separadas por vírgula)">
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="Modal.save()">Salvar Nota</button>
-            `;
-        } else if (type === 'transaction') {
-            title.innerText = "Nova Transação";
-            body.innerHTML = `
-                <input id="m-t-desc" placeholder="Descrição">
-                <select id="m-t-type">
-                    <option value="in">Entrada</option>
-                    <option value="out">Saída</option>
-                </select>
-                <input id="m-t-val" type="number" placeholder="Valor">
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="Modal.save()">Salvar Transação</button>
-            `;
-        } else if (type === 'social') {
-            title.innerText = "Adicionar Rede Social";
-            body.innerHTML = `
-                <input id="m-s-platform" placeholder="Ex: Instagram, LinkedIn...">
-                <input id="m-s-handle" placeholder="Ex: @usuario">
-                <input id="m-s-link" placeholder="Link (URL)">
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-top:10px" onclick="Modal.save()">Salvar Rede Social</button>
-            `;
-        }
-        
-    },
-    editProject(index) {
-        this.open('project');
-        this.editingIndex = index;
-        const p = API.data.projects[index];
-        document.getElementById('modal-title').innerText = "Editar Projeto";
-        document.getElementById('m-p-name').value = p.name;
-        document.getElementById('m-p-client').value = p.client;
-        document.getElementById('m-p-status').value = p.status;
-        document.getElementById('m-p-val').value = p.value;
-    },
-    save() {
-        if (this.currentType === 'project') {
-            const name = document.getElementById('m-p-name').value;
-            if(!name) return alert("Nome obrigatório");
-            const obj = { name, client: document.getElementById('m-p-client').value, status: document.getElementById('m-p-status').value, value: parseFloat(document.getElementById('m-p-val').value) || 0 };
-            if (this.editingIndex !== null) API.data.projects[this.editingIndex] = obj;
-            else API.data.projects.push(obj);
-        } else if (this.currentType === 'note') {
-            const text = document.getElementById('m-n-text').value;
-            if(!text) return alert("Texto obrigatório");
-            API.data.notes.push({ text, tags: document.getElementById('m-n-tags').value });
-        } else if (this.currentType === 'transaction') {
-            const desc = document.getElementById('m-t-desc').value;
-            if(!desc) return alert("Descrição obrigatória");
-            API.data.transactions.push({ desc, type: document.getElementById('m-t-type').value, value: parseFloat(document.getElementById('m-t-val').value) || 0 });
-        } else if (this.currentType === 'social') {
-            const platform = document.getElementById('m-s-platform').value;
-            const link = document.getElementById('m-s-link').value;
-            if(!platform || !link) return alert("Preencha a plataforma e o link");
-            API.data.social.push({ platform, handle: document.getElementById('m-s-handle').value, link });
-        }
-        API.sync();
-        this.close();
-    },
-    close() { document.getElementById('modal-overlay').classList.add('hidden'); }
-};
-
-const Theme = {
-    toggle() {
-        const body = document.body;
-        body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    }
-};
-
-// --- LÓGICA INSTAGRAM ---
-function analisarPerfil(posts, seguidores, seguindo) {
-    const p = Utils.limparParaNumero(posts);
-    const seg = Utils.limparParaNumero(seguidores);
-    const seguin = Utils.limparParaNumero(seguindo);
-    
-    const scoreDiv = document.getElementById("res-score");
-    const tipBox = document.getElementById("res-tip-box");
-    const tipText = document.getElementById("res-tip-text");
-    
-    let status = "", dica = "", classe = "";
-
-    if (p > 10 && seg > seguin) {
-        status = "🟢 Perfil saudável";
-        classe = "score-saudavel";
-        dica = "Seu perfil tem ótima autoridade! Foque em Reels e Stories para conversão.";
-    } else if (p > 0 && seg >= (seguin * 0.5)) {
-        status = "🟡 Engajamento médio";
-        classe = "score-medio";
-        dica = "Tente criar legendas que estimulem comentários e use hashtags de nicho.";
-    } else {
-        status = "🔴 Precisa melhorar";
-        classe = "score-baixo";
-        dica = "Foque em consistência! Resolva dores do seu público e evite seguir perfis aleatórios.";
-    }
-
-    scoreDiv.innerHTML = status;
-    scoreDiv.className = "score-container " + classe;
-    tipText.innerText = dica;
-    tipBox.style.display = "block";
+function toast(msg, kind='ok'){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border shadow-glow text-sm '+
+    (kind==='err' ? 'border-rose-500/40 bg-rose-500/10 text-rose-200' : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200');
+  t.classList.remove('hidden');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.add('hidden'), 2200);
 }
 
-function buscar() {
-    const userInput = document.getElementById("user");
-    if(!userInput) return;
-    const user = userInput.value.replace("@", "");
-    const card = document.getElementById("profile-card");
-    const loader = document.getElementById("loading");
-
-    if(loader) loader.style.display = "block";
-    if(card) card.style.display = "none";
-
-    fetch(`http://127.0.0.1:8000/instagram/${user}`)
-        .then(r => r.json())
-        .then(data => {
-            if(loader) loader.style.display = "none";
-
-            document.getElementById("res-username").innerText = `@${data.username}`;
-            document.getElementById("res-posts").innerText = Utils.somarUm(data.posts);
-            document.getElementById("res-followers").innerText = Utils.somarUm(data.followers);
-            document.getElementById("res-following").innerText = data.following;
-
-            analisarPerfil(data.posts, data.followers, data.following);
-
-            if(card) card.style.display = "block";
-        })
-        .catch(err => {
-            if(loader) loader.style.display = "none";
-            alert("Erro ao buscar perfil. Verifique se o servidor está rodando.");
-        });
+/* ============================================================
+   Auth
+============================================================ */
+async function api(path, opts={}){
+  const headers = {'Content-Type':'application/json'};
+  const token = localStorage.getItem('auth_token');
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  const r = await fetch(API+path, {
+    headers,
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.status===204 ? null : r.json();
 }
 
-window.onload = () => Auth.init();
+$('#loginForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  try{
+    const res = await api('/auth/login',{method:'POST',body:{email:$('#email').value,password:$('#password').value}});
+    localStorage.setItem('auth_token', res.token);
+    localStorage.setItem('user', JSON.stringify(res.user));
+    boot();
+  }catch(err){ toast('Falha no login','err'); }
+});
+function logout(){ localStorage.removeItem('auth_token'); localStorage.removeItem('user'); location.reload(); }
 
-// --- UTILITÁRIOS ---
-const Utils = {
-    limparParaNumero(texto) {
-        if (typeof texto !== 'string') return texto || 0;
-        return parseInt(texto.replace(/\D/g, '')) || 0;
-    },
-    somarUm(valorTexto) {
-        let numero = this.limparParaNumero(valorTexto);
-        return (numero + 1).toLocaleString('pt-BR');
-    }
-};
+// Register link -> modal
+$('#registerLink').addEventListener('click', e=>{
+  e.preventDefault();
+  $('#modalTitle').textContent = 'Criar conta';
+  $('#modalBody').innerHTML = `
+    <form id="regForm" class="space-y-3">
+      <div>
+        <label class="text-xs text-slate-400">Nome</label>
+        <input name="name" required class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-3" />
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">E-mail</label>
+        <input name="email" type="email" required class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-3" />
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">Senha</label>
+        <input name="password" type="password" required class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-3" />
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-white/5">Cancelar</button>
+        <button class="grad-brand px-4 py-2 rounded-xl font-semibold">Criar</button>
+      </div>
+    </form>`;
+  openModal();
+  $('#regForm').onsubmit = async ev => {
+    ev.preventDefault();
+    const fd = Object.fromEntries(new FormData(ev.target));
+    try{
+      const res = await api('/auth/register',{method:'POST',body:fd});
+      localStorage.setItem('auth_token', res.token);
+      localStorage.setItem('user', JSON.stringify(res.user));
+      closeModal(); boot(); toast('Conta criada');
+    }catch(err){ toast('Erro ao criar conta','err'); }
+  };
+});
 
+/* ============================================================
+   Navigation
+============================================================ */
+const ROUTES = [
+  {id:'dashboard', label:'Dashboard', icon:'M3 12 12 4l9 8M5 10v10h14V10', sub:'Sua visão geral hoje.'},
+  {id:'projects',  label:'Projetos',  icon:'M4 6h16M4 12h16M4 18h10',       sub:'Pipeline de trabalho.'},
+  {id:'finance',   label:'Finanças',  icon:'M3 3v18h18M7 15l4-4 3 3 5-6',   sub:'Receitas, despesas e lucro.'},
+  {id:'instagram', label:'Instagram', icon:'M4 4h16v16H4z M16 8h.01 M12 8a4 4 0 100 8 4 4 0 000-8', sub:'Analytics rápido do seu perfil.'},
+  {id:'notes',     label:'Notas',     icon:'M4 4h12l4 4v12H4z M14 4v6h6',   sub:'Ideias e lembretes.'},
+  {id:'reports',   label:'Relatórios',icon:'M8 3h8l4 4v14H4V3h4z M8 13h8 M8 17h5', sub:'Exporte um resumo em PDF.'},
+];
 
+function renderNav(){
+  $('#nav').innerHTML = ROUTES.map(r=>`
+    <button data-route="${r.id}" class="nav-item ${state.route===r.id?'active':''} group flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 min-w-[140px] lg:min-w-0">
+      <span class="dot w-1.5 h-6 rounded-full grad-brand opacity-0 -ml-3 mr-0 hidden lg:block"></span>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${r.icon}"/></svg>
+      <span class="text-sm font-medium">${r.label}</span>
+    </button>`).join('');
+  $$('#nav [data-route]').forEach(b=>b.onclick=()=>go(b.dataset.route));
+}
 
-const Export = {
-    async generatePDF(event) {
-        const element = document.querySelector('.content');
-        const btn = event ? event.currentTarget : document.querySelector('button[onclick*="Export.generatePDF"]');
-        const originalText = btn.innerHTML;
+function go(route){
+  state.route = route;
+  const meta = ROUTES.find(r=>r.id===route);
+  $('#pageTitle').textContent = meta.label;
+  $('#pageSubtitle').textContent = meta.sub;
+  renderNav();
+  render();
+}
 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
-        btn.disabled = true;
+/* ============================================================
+   Data loaders
+============================================================ */
+async function refresh(){
+  const [p,f,n,d] = await Promise.all([
+    api('/projects'), api('/finance'), api('/notes'), api('/dashboard'),
+  ]);
+  state.projects=p; state.finance=f; state.notes=n; state.dash=d;
+}
 
-        // Aplica a classe de força azul
-        element.classList.add('pdf-export-active');
+/* ============================================================
+   VIEWS
+============================================================ */
+function render(){
+  const v = $('#view');
+  v.classList.remove('fade-in'); void v.offsetWidth; v.classList.add('fade-in');
+  ({
+    dashboard: viewDashboard,
+    projects:  viewProjects,
+    finance:   viewFinance,
+    instagram: viewInstagram,
+    notes:     viewNotes,
+    reports:   viewReports,
+  })[state.route]();
+}
 
-        const opt = {
-            margin: 0, 
-            filename: `Relatorio_MyFreela.pdf`,
-            image: { type: 'jpeg', quality: 1.0 }, // Qualidade máxima para evitar efeito de opacidade
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#1e3a8a', // FORÇA O MOTOR A PINTAR DE AZUL
-                removeContainer: true
-            },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+/* ---------- Dashboard ---------- */
+function metric(label, value, hint, tone='brand'){
+  const tones = {
+    brand:'from-brand-500/20 to-brand-500/0 text-brand-400',
+    emerald:'from-emerald-500/20 to-emerald-500/0 text-emerald-400',
+    rose:'from-rose-500/20 to-rose-500/0 text-rose-400',
+    sky:'from-sky-500/20 to-sky-500/0 text-sky-400',
+  }[tone];
+  return `
+    <div class="card relative overflow-hidden rounded-2xl border border-white/5 bg-ink-900 p-5 shadow-card">
+      <div class="absolute inset-0 bg-gradient-to-br ${tones.split(' ').slice(0,2).join(' ')} pointer-events-none"></div>
+      <div class="relative">
+        <div class="text-xs uppercase tracking-widest text-slate-400">${label}</div>
+        <div class="mt-2 text-2xl font-bold ${tones.split(' ').slice(2).join(' ')}">${value}</div>
+        <div class="mt-1 text-xs text-slate-400">${hint}</div>
+      </div>
+    </div>`;
+}
 
-        try {
-            // Aguarda 500ms para garantir que o navegador processou o fundo azul
-            await new Promise(r => setTimeout(r, 500));
-            
-            await html2pdf().set(opt).from(element).save();
-        } catch (error) {
-            console.error(error);
-        } finally {
-            element.classList.remove('pdf-export-active');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    }
-};
+function viewDashboard(){
+  const d = state.dash;
+  const recent = [...state.finance].slice(-6).reverse();
+  $('#view').innerHTML = `
+    <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      ${metric('Faturamento', fmtBRL(d.faturamento), 'Total recebido','emerald')}
+      ${metric('Despesas', fmtBRL(d.despesas), 'Custos do período','rose')}
+      ${metric('Lucro líquido', fmtBRL(d.lucro), 'Receitas − Despesas','brand')}
+      ${metric('Taxa de conversão', (d.taxa_conversao||0)+'%', `${d.concluidos}/${d.projetos_total} projetos`,'sky')}
+    </section>
 
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-6">
+      <div class="xl:col-span-2 rounded-2xl border border-white/5 bg-ink-900 p-6 shadow-card">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold">Pipeline ativo</h3>
+          <button onclick="go('projects')" class="text-xs text-brand-400 hover:text-brand-300">Ver todos →</button>
+        </div>
+        <div class="space-y-3">
+          ${state.projects.filter(p=>p.status!=='concluido').slice(0,5).map(p=>`
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-ink-850 border border-white/5">
+              <div class="w-9 h-9 rounded-lg grad-brand grid place-items-center text-sm font-bold">${p.client[0]}</div>
+              <div class="min-w-0 flex-1">
+                <div class="truncate font-medium">${p.name}</div>
+                <div class="text-xs text-slate-400 truncate">${p.client} · entrega ${fmtDate(p.deadline)}</div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold">${fmtBRL(p.value)}</div>
+                ${statusPill(p.status)}
+              </div>
+            </div>`).join('') || `<p class="text-sm text-slate-400">Nenhum projeto ativo.</p>`}
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/5 bg-ink-900 p-6 shadow-card">
+        <h3 class="font-semibold mb-4">Últimas movimentações</h3>
+        <div class="space-y-2">
+          ${recent.map(t=>`
+            <div class="flex items-center justify-between text-sm py-2 border-b border-white/5 last:border-0">
+              <div class="min-w-0">
+                <div class="truncate">${t.description}</div>
+                <div class="text-xs text-slate-500">${fmtDate(t.date)} · ${t.category}</div>
+              </div>
+              <div class="font-semibold ${t.type==='receita'?'text-emerald-400':'text-rose-400'}">
+                ${t.type==='receita'?'+':'−'} ${fmtBRL(t.amount)}
+              </div>
+            </div>`).join('') || `<p class="text-sm text-slate-400">Sem lançamentos.</p>`}
+        </div>
+      </div>
+    </section>`;
+}
+
+/* ---------- Projects (Kanban) ---------- */
+function statusPill(s){
+  const map = {
+    ideia:['bg-sky-500/15 text-sky-300 border-sky-500/20','Ideia'],
+    andamento:['bg-amber-500/15 text-amber-300 border-amber-500/20','Andamento'],
+    concluido:['bg-emerald-500/15 text-emerald-300 border-emerald-500/20','Concluído'],
+  };
+  const [cls,label] = map[s]||map.ideia;
+  return `<span class="mt-1 inline-block text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border ${cls}">${label}</span>`;
+}
+
+function viewProjects(){
+  const cols = [
+    ['ideia','Ideia','sky'],
+    ['andamento','Em andamento','amber'],
+    ['concluido','Concluído','emerald'],
+  ];
+  const q = state.search.toLowerCase();
+  const filtered = state.projects.filter(p =>
+    !q || p.name.toLowerCase().includes(q) || p.client.toLowerCase().includes(q));
+
+  $('#view').innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div class="flex gap-2 items-center bg-ink-800 border border-white/5 rounded-xl px-3 py-2">
+        <input id="projSearch" placeholder="Buscar projeto ou cliente…" class="bg-transparent focus:outline-none text-sm w-64"/>
+      </div>
+      <button onclick="openProject()" class="grad-brand px-4 py-2 rounded-xl font-semibold shadow-glow hover:brightness-110">+ Novo projeto</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      ${cols.map(([id,label,tone])=>`
+        <div class="rounded-2xl border border-white/5 bg-ink-900 p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-${tone}-400"></span>
+              <h4 class="font-semibold">${label}</h4>
+            </div>
+            <span class="text-xs text-slate-400">${filtered.filter(p=>p.status===id).length}</span>
+          </div>
+          <div class="space-y-3">
+            ${filtered.filter(p=>p.status===id).map(p=>`
+              <div class="card group rounded-xl border border-white/5 bg-ink-850 p-4 hover:border-brand-500/30">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="font-semibold truncate">${p.name}</div>
+                    <div class="text-xs text-slate-400 truncate">${p.client}</div>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition flex gap-1">
+                    <button title="Editar" onclick='openProject(${JSON.stringify(p)})' class="w-7 h-7 rounded-lg hover:bg-white/5">✎</button>
+                    <button title="Excluir" onclick="delProject('${p.id}')" class="w-7 h-7 rounded-lg hover:bg-rose-500/10 text-rose-300">✕</button>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2 line-clamp-2">${p.description||'—'}</p>
+                <div class="mt-3 flex items-center justify-between text-xs">
+                  <span class="text-slate-400">${fmtDate(p.deadline)}</span>
+                  <span class="font-semibold">${fmtBRL(p.value)}</span>
+                </div>
+                <div class="mt-3 flex gap-1">
+                  ${['ideia','andamento','concluido'].map(s=>`
+                    <button onclick="moveProject('${p.id}','${s}')"
+                      class="text-[10px] px-2 py-1 rounded-md border ${p.status===s?'bg-brand-500/20 border-brand-500/40 text-brand-200':'border-white/5 text-slate-400 hover:text-white'}">${s}</button>
+                  `).join('')}
+                </div>
+              </div>`).join('') || `<p class="text-xs text-slate-500">Nada aqui ainda.</p>`}
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  $('#projSearch').oninput = e => { state.search = e.target.value; render(); };
+  $('#projSearch').value = state.search;
+}
+
+function openProject(p={}){
+  const isEdit = !!p.id;
+  $('#modalTitle').textContent = isEdit ? 'Editar projeto' : 'Novo projeto';
+  $('#modalBody').innerHTML = `
+    <form id="projForm" class="space-y-3">
+      ${field('Nome','name',p.name||'')}
+      ${field('Cliente','client',p.client||'')}
+      <div class="grid grid-cols-2 gap-3">
+        ${field('Valor (R$)','value',p.value||0,'number')}
+        ${field('Prazo','deadline',p.deadline||'','date')}
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">Status</label>
+        <select name="status" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5">
+          ${['ideia','andamento','concluido'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">Descrição</label>
+        <textarea name="description" rows="3" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5">${p.description||''}</textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5">Cancelar</button>
+        <button class="grad-brand px-4 py-2 rounded-xl font-semibold">Salvar</button>
+      </div>
+    </form>`;
+  openModal();
+  $('#projForm').onsubmit = async e=>{
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target));
+    fd.value = parseFloat(fd.value)||0;
+    try{
+      if(isEdit) await api('/projects/'+p.id,{method:'PUT',body:fd});
+      else       await api('/projects',{method:'POST',body:fd});
+      closeModal(); await refresh(); render(); toast(isEdit?'Projeto atualizado':'Projeto criado');
+    }catch{ toast('Erro ao salvar','err'); }
+  };
+}
+async function moveProject(id,status){
+  await api(`/projects/${id}/status?status=${status}`,{method:'PATCH'});
+  await refresh(); render();
+}
+async function delProject(id){
+  if(!confirm('Excluir este projeto?')) return;
+  await api('/projects/'+id,{method:'DELETE'});
+  await refresh(); render(); toast('Projeto excluído');
+}
+
+/* ---------- Finance ---------- */
+function viewFinance(){
+  const rec = state.finance.filter(t=>t.type==='receita').reduce((s,t)=>s+t.amount,0);
+  const des = state.finance.filter(t=>t.type==='despesa').reduce((s,t)=>s+t.amount,0);
+  $('#view').innerHTML = `
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      ${metric('Receitas', fmtBRL(rec),'Total do período','emerald')}
+      ${metric('Despesas', fmtBRL(des),'Total do período','rose')}
+      ${metric('Saldo', fmtBRL(rec-des),'Receitas − Despesas','brand')}
+    </div>
+
+    <div class="rounded-2xl border border-white/5 bg-ink-900 p-6 shadow-card">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold">Lançamentos</h3>
+        <button onclick="openTx()" class="grad-brand px-4 py-2 rounded-xl font-semibold shadow-glow">+ Novo lançamento</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase tracking-wider text-slate-400">
+            <tr><th class="py-2">Descrição</th><th>Categoria</th><th>Data</th><th class="text-right">Valor</th><th></th></tr>
+          </thead>
+          <tbody>
+            ${[...state.finance].reverse().map(t=>`
+              <tr class="border-t border-white/5">
+                <td class="py-3">${t.description}</td>
+                <td class="text-slate-400">${t.category}</td>
+                <td class="text-slate-400">${fmtDate(t.date)}</td>
+                <td class="text-right font-semibold ${t.type==='receita'?'text-emerald-400':'text-rose-400'}">
+                  ${t.type==='receita'?'+':'−'} ${fmtBRL(t.amount)}
+                </td>
+                <td class="text-right"><button onclick="delTx('${t.id}')" class="text-slate-400 hover:text-rose-300">✕</button></td>
+              </tr>`).join('') || `<tr><td colspan="5" class="py-6 text-center text-slate-400">Nenhum lançamento.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+function openTx(){
+  $('#modalTitle').textContent = 'Novo lançamento';
+  $('#modalBody').innerHTML = `
+    <form id="txForm" class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-slate-400">Tipo</label>
+          <select name="type" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5">
+            <option value="receita">Receita</option><option value="despesa">Despesa</option>
+          </select>
+        </div>
+        ${field('Categoria','category','geral')}
+      </div>
+      ${field('Descrição','description','')}
+      <div class="grid grid-cols-2 gap-3">
+        ${field('Valor','amount',0,'number')}
+        ${field('Data','date',new Date().toISOString().slice(0,10),'date')}
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-white/5">Cancelar</button>
+        <button class="grad-brand px-4 py-2 rounded-xl font-semibold">Salvar</button>
+      </div>
+    </form>`;
+  openModal();
+  $('#txForm').onsubmit = async e=>{
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target));
+    fd.amount = parseFloat(fd.amount)||0;
+    await api('/finance',{method:'POST',body:fd});
+    closeModal(); await refresh(); render(); toast('Lançamento adicionado');
+  };
+}
+async function delTx(id){
+  await api('/finance/'+id,{method:'DELETE'});
+  await refresh(); render();
+}
+
+/* ---------- Instagram ---------- */
+function viewInstagram(){
+  $('#view').innerHTML = `
+    <div class="rounded-2xl border border-white/5 bg-ink-900 p-6 shadow-card max-w-2xl">
+      <h3 class="font-semibold mb-1">Instagram Analytics</h3>
+      <p class="text-sm text-slate-400 mb-4">Digite um @username para consultar métricas rápidas.</p>
+      <form id="igForm" class="flex gap-2">
+        <input id="igUser" placeholder="@nevdev" class="flex-1 bg-ink-800 border border-white/5 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500/50"/>
+        <button class="grad-brand px-5 rounded-xl font-semibold shadow-glow">Buscar</button>
+      </form>
+      <div id="igResult" class="mt-6"></div>
+    </div>`;
+  $('#igForm').onsubmit = async e=>{
+    e.preventDefault();
+    const u = $('#igUser').value.trim().replace(/^@/,'');
+    if(!u) return;
+    $('#igResult').innerHTML = `<div class="text-slate-400 text-sm">Buscando…</div>`;
+    try{
+      const r = await api('/instagram/'+encodeURIComponent(u));
+      $('#igResult').innerHTML = `
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          ${metric('Seguidores', (r.followers??'—').toLocaleString('pt-BR'),'total','brand')}
+          ${metric('Seguindo', (r.following??'—').toLocaleString('pt-BR'),'contas','sky')}
+          ${metric('Posts', (r.posts??'—').toLocaleString('pt-BR'),'publicados','emerald')}
+          ${metric('Engajamento', (r.engagement??'—')+'%','estimado','rose')}
+        </div>
+        ${r.raw?`<p class="text-xs text-slate-500 mt-4">${r.raw}</p>`:''}
+        <p class="text-[11px] text-slate-500 mt-2">fonte: ${r.source}</p>`;
+    }catch{ $('#igResult').innerHTML = `<div class="text-rose-300 text-sm">Não foi possível buscar.</div>`; }
+  };
+}
+
+/* ---------- Notes ---------- */
+function viewNotes(){
+  const colors = { indigo:'from-brand-500/20', emerald:'from-emerald-500/20', rose:'from-rose-500/20', sky:'from-sky-500/20' };
+  $('#view').innerHTML = `
+    <div class="flex justify-end mb-6">
+      <button onclick="openNote()" class="grad-brand px-4 py-2 rounded-xl font-semibold shadow-glow">+ Nova nota</button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      ${state.notes.map(n=>`
+        <div class="card relative rounded-2xl border border-white/5 bg-ink-900 p-5 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br ${colors[n.color]||colors.indigo} to-transparent pointer-events-none"></div>
+          <div class="relative">
+            <div class="flex justify-between items-start">
+              <h4 class="font-semibold">${n.title}</h4>
+              <button onclick="delNote('${n.id}')" class="text-slate-400 hover:text-rose-300">✕</button>
+            </div>
+            <p class="text-sm text-slate-300 mt-2 whitespace-pre-wrap">${n.content||''}</p>
+            <div class="text-[11px] text-slate-500 mt-4">${fmtDate(n.created_at)}</div>
+          </div>
+        </div>`).join('') || `<p class="text-slate-400 text-sm">Nenhuma nota ainda.</p>`}
+    </div>`;
+}
+function openNote(){
+  $('#modalTitle').textContent = 'Nova nota';
+  $('#modalBody').innerHTML = `
+    <form id="noteForm" class="space-y-3">
+      ${field('Título','title','')}
+      <div>
+        <label class="text-xs text-slate-400">Conteúdo</label>
+        <textarea name="content" rows="4" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5"></textarea>
+      </div>
+      <div>
+        <label class="text-xs text-slate-400">Cor</label>
+        <select name="color" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5">
+          <option value="indigo">Indigo</option><option value="emerald">Emerald</option>
+          <option value="rose">Rose</option><option value="sky">Sky</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-white/5">Cancelar</button>
+        <button class="grad-brand px-4 py-2 rounded-xl font-semibold">Salvar</button>
+      </div>
+    </form>`;
+  openModal();
+  $('#noteForm').onsubmit = async e=>{
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target));
+    await api('/notes',{method:'POST',body:fd});
+    closeModal(); await refresh(); render(); toast('Nota criada');
+  };
+}
+async function delNote(id){ await api('/notes/'+id,{method:'DELETE'}); await refresh(); render(); }
+
+/* ---------- Reports ---------- */
+function viewReports(){
+  const d = state.dash;
+  const month = new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  $('#view').innerHTML = `
+    <div class="flex justify-end mb-4">
+      <button onclick="exportPDF()" class="grad-brand px-4 py-2 rounded-xl font-semibold shadow-glow">Exportar PDF</button>
+    </div>
+    <div id="reportArea" class="rounded-2xl border border-white/5 bg-ink-900 p-8 shadow-card">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <div class="text-xs uppercase tracking-widest text-slate-400">Relatório mensal</div>
+          <h2 class="text-2xl font-bold">MyFreela · ${month}</h2>
+        </div>
+        <div class="w-12 h-12 rounded-2xl grad-brand grid place-items-center font-bold">N</div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        ${metric('Faturamento',fmtBRL(d.faturamento),'','emerald')}
+        ${metric('Despesas',fmtBRL(d.despesas),'','rose')}
+        ${metric('Lucro',fmtBRL(d.lucro),'','brand')}
+        ${metric('Conversão',(d.taxa_conversao||0)+'%','','sky')}
+      </div>
+
+      <h3 class="font-semibold mb-2">Projetos</h3>
+      <table class="w-full text-sm mb-6">
+        <thead class="text-left text-xs text-slate-400 uppercase tracking-wider">
+          <tr><th class="py-2">Projeto</th><th>Cliente</th><th>Status</th><th class="text-right">Valor</th></tr>
+        </thead>
+        <tbody>
+          ${state.projects.map(p=>`
+            <tr class="border-t border-white/5">
+              <td class="py-2">${p.name}</td><td>${p.client}</td><td>${p.status}</td>
+              <td class="text-right font-semibold">${fmtBRL(p.value)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <h3 class="font-semibold mb-2">Lançamentos</h3>
+      <table class="w-full text-sm">
+        <thead class="text-left text-xs text-slate-400 uppercase tracking-wider">
+          <tr><th class="py-2">Descrição</th><th>Tipo</th><th class="text-right">Valor</th></tr>
+        </thead>
+        <tbody>
+          ${state.finance.map(t=>`
+            <tr class="border-t border-white/5">
+              <td class="py-2">${t.description}</td><td>${t.type}</td>
+              <td class="text-right ${t.type==='receita'?'text-emerald-400':'text-rose-400'}">${fmtBRL(t.amount)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+function exportPDF(){
+  const el = document.getElementById('reportArea');
+  html2pdf().set({
+    margin:10, filename:`myfreela-${Date.now()}.pdf`,
+    image:{type:'jpeg',quality:.95},
+    html2canvas:{scale:2, backgroundColor:'#0f0f1a'},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+  }).from(el).save();
+}
+
+/* ============================================================
+   Helpers
+============================================================ */
+function field(label,name,value='',type='text'){
+  return `
+    <div>
+      <label class="text-xs text-slate-400">${label}</label>
+      <input name="${name}" type="${type}" value="${value}" class="mt-1 w-full bg-ink-800 border border-white/5 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500/50" />
+    </div>`;
+}
+function openModal(){ $('#modal').classList.remove('hidden'); }
+function closeModal(){ $('#modal').classList.add('hidden'); }
+function toggleTheme(){ document.documentElement.classList.toggle('dark'); document.body.classList.toggle('bg-ink-950'); document.body.classList.toggle('bg-slate-50'); }
+
+$('#globalSearch').addEventListener('input', e=>{
+  state.search = e.target.value;
+  if(state.route==='projects') render();
+});
+
+/* ============================================================
+   Boot
+============================================================ */
+async function boot(){
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  renderNav();
+  // populate user display from localStorage or /auth/me
+  const stored = localStorage.getItem('user');
+  if(stored){
+    try{ const u = JSON.parse(stored); $('#userName').textContent = u.name; $('#userSubtitle').textContent = u.email; }catch(e){}
+  }else{
+    try{ const r = await api('/auth/me'); if(r && r.user){ localStorage.setItem('user', JSON.stringify(r.user)); $('#userName').textContent = r.user.name; $('#userSubtitle').textContent = r.user.email; } }
+    catch(e){}
+  }
+  try{ await refresh(); }catch{ toast('Backend offline — inicie app.py','err'); }
+  go('dashboard');
+}
+if(localStorage.getItem('auth_token')) boot();
 </script>
 </body>
 </html>
