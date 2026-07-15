@@ -396,4 +396,4 @@ async def instagram(username: str):
 
 @app.get("/")
 def root():
-    return FileResponse("index.html")
+    return FileResponse(os.path.join(os.path.dirname(__file__), 'index.html'))
