@@ -151,7 +151,7 @@
 /* ============================================================
    CONFIG
 ============================================================ */
-const API = (localStorage.getItem('api') || 'http://localhost:8000').replace(/\/$/,'');
+const API = (localStorage.getItem('api') || window.location.origin).replace(/\/$/,'');
 const $ = (s,r=document)=>r.querySelector(s);
 const $$= (s,r=document)=>[...r.querySelectorAll(s)];
 const fmtBRL = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
