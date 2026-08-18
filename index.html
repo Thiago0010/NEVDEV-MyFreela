@@ -278,7 +278,6 @@ h1, h2, h3, h4, h5, h6, p, span, td, th {
     opacity: 1 !important;
 }
 
-
     </style>
 </head>
 <body>
@@ -325,7 +324,7 @@ h1, h2, h3, h4, h5, h6, p, span, td, th {
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </button>
     
-
+    
 </div>
             </nav>
             <div class="sidebar-footer" style="margin-top: auto;">
@@ -384,7 +383,7 @@ h1, h2, h3, h4, h5, h6, p, span, td, th {
                 <div class="finance-header">
                     <div class="card bg-green"><small style="color:#020617;">Entradas</small><h2 style="color: #020617 !important;" id="fin-in" class="black" >R$ 0,00</h2></div>
                     <div class="card bg-red"><small>Saídas</small><h2 id="fin-out" class="black" style="color: #020617 !important;"> R$ 0,00</h2></div>
-                    <div class="card bg-blue"><small>Balanço</small><h2 id="fin-bal" class="black" style="color: #020617 !important;">R$ 0,00</h2></div>
+                    <div class="card bg-blue"><small>Saldo</small><h2 id="fin-bal" class="black" style="color: #020617 !important;">R$ 0,00</h2></div>
                     <style>
                         #view-finance .finance-header small{
                             color: #0f172a !important;
@@ -472,66 +471,54 @@ h1, h2, h3, h4, h5, h6, p, span, td, th {
 </style>
 <script>
 
-// --- API & ESTADO ---
-const BASE_URL = 'https://personal-finance-api-2pke.onrender.com';
+// --- API & ESTADO (OFFLINE / LOCALSTORAGE ONLY) ---
+const BASE_URL = ''; // Desabilitado - usando apenas localStorage
 const API = {
     user: null,
-    data: { projects: [], notes: [], transactions: [], social: [] }, 
+    data: { projects: [], notes: [], transactions: [], social: [] },
 
-        async request(endpoint, method = 'GET', body = null) {
-        const options = {
-            method,
-            headers: { 'Content-Type': 'application/json' }
-        };
-
-        if (body) options.body = JSON.stringify(body);
-
-        const url = BASE_URL + endpoint;
-
-        try {
-            const res = await fetch(url, options);
-
-            if (!res.ok) {
-                console.error('Erro HTTP:', res.status);
-                return null;
-            }
-
-            return await res.json();
-
-            
-        } catch (e) {
-            console.error("Erro API", e);
-            return null;
+    // Mock request - apenas para compatibilidade, não faz requisições reais
+    async request(endpoint, method = 'GET', body = null) {
+        console.log('[OFFLINE MODE] API call:', endpoint, method, body);
+        
+        // Simula respostas para auth
+        if (endpoint.includes('/auth/login') || endpoint.includes('/auth/register')) {
+            return { id: 1, nome: body?.nome || 'Usuário Teste', email: body?.email };
         }
+        if (endpoint.includes('/resumo')) {
+            return { projects: [], notes: [], transactions: [], social: [] };
+        }
+        if (endpoint.includes('/sync')) {
+            return { success: true };
+        }
+        return null;
     },
 
-        async sync() {
+    // Salva tudo no localStorage
+    async sync() {
         if (!this.user) return;
-
-        await this.request('/api/sync', 'POST', {
-            data: this.data
-        });
-
+        const key = `myfreela_data_${this.user.id}`;
+        localStorage.setItem(key, JSON.stringify(this.data));
+        console.log('[OFFLINE] Dados salvos no localStorage:', key);
         App.render();
     },
 
+    // Carrega do localStorage
     async load() {
-    if (!API.user || !API.user.id) return;
-
-    const res = await API.request(
-        `/usuarios/${API.user.id}/resumo`,
-        'GET'
-    );
-
-    if (res) {
-        this.data.projects = res.projects || [];
-        this.data.notes = res.notes || [];
-        this.data.transactions = res.transactions || [];
-        this.data.social = res.social || [];
+        if (!this.user || !this.user.id) return;
+        const key = `myfreela_data_${this.user.id}`;
+        const stored = localStorage.getItem(key);
+        if (stored) {
+            try {
+                this.data = JSON.parse(stored);
+                console.log('[OFFLINE] Dados carregados do localStorage:', key);
+            } catch (e) {
+                console.error('[OFFLINE] Erro ao parsear dados:', e);
+                this.data = { projects: [], notes: [], transactions: [], social: [] };
+            }
+        }
+        App.render();
     }
-
-    App.render();
-}
 };
 
 const Auth = {
@@ -999,7 +986,6 @@ const Utils = {
         return (numero + 1).toLocaleString('pt-BR');
     }
 };
-
 
 
 const Export = {
